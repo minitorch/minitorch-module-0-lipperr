@@ -31,18 +31,22 @@ class Module:
 
     def train(self) -> None:
         """Set the mode of this module and all descendent modules to `train`."""
+
         def set_mode_train(module: Module) -> None:
             module.training = True
             for submod in module.modules():
                 set_mode_train(submod)
+
         set_mode_train(self)
 
     def eval(self) -> None:
         """Set the mode of this module and all descendent modules to `eval`."""
+
         def set_mode_eval(module: Module) -> None:
             module.training = False
             for submod in module.modules():
                 set_mode_eval(submod)
+
         set_mode_eval(self)
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
@@ -54,22 +58,24 @@ class Module:
 
         """
         params_out = []
-        def collect_params(name, module):
+
+        def collect_params(name: str, module: Module):
             params_out.extend([(name + k, v) for (k, v) in module._parameters.items()])
             for submod_name, submod in module._modules.items():
-                collect_params(name + submod_name + '.', submod)
+                collect_params(name + submod_name + ".", submod)
 
-        collect_params('', self)
+        collect_params("", self)
         return params_out
-    
+
     def parameters(self) -> Sequence[Parameter]:
         """Enumerate over all the parameters of this module and its descendents."""
         params_out = []
+
         def collect_params(module):
             params_out.extend(module._parameters.values())
             for submod in module.modules():
                 collect_params(submod)
-                
+
         collect_params(self)
         return params_out
 
